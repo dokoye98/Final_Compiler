@@ -1,6 +1,6 @@
 package TACTest;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import project.compiler.intercode.TACgenerator;
 import project.compiler.lexer.Lexicon;
 import project.compiler.nodes.LiteralNode;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TACGenTest {
     @Test
-    void simpleAdditionTest() {
+    public void simpleAdditionTest() {
         String code = "5 + 5";
         Lexicon lexer = new Lexicon(code);
         lexer.splitter();
@@ -37,7 +37,7 @@ public class TACGenTest {
     }
 
     @Test
-    void variableAdditionTest() {
+    public void variableAdditionTest() {
         String code = "a = 5; b = 10; c = a + b; print c";
         Lexicon lexer = new Lexicon(code);
         lexer.splitter();
@@ -57,11 +57,10 @@ public class TACGenTest {
         assertEquals("ADD R4, R2 , R3", instructions.get(6).toString());
         assertEquals("MOV c, R4", instructions.get(7).toString());
         assertEquals("CALL print, c", instructions.get(8).toString());
-
     }
 
     @Test
-    void printStatementTest() {
+    public void printStatementTest() {
         String code = "print \"hello\"";
         Lexicon lexer = new Lexicon(code);
         lexer.splitter();
@@ -74,11 +73,10 @@ public class TACGenTest {
         assertEquals(2, instructions.size());
         assertEquals("LOAD R0, \"hello\"", instructions.get(0).toString());
         assertEquals("CALL print, R0", instructions.get(1).toString());
-
-
     }
+
     @Test
-    void differentSyntaxVarTest() {
+    public void differentSyntaxVarTest() {
         VariableAssignmentNode varAssign1 = new VariableAssignmentNode("a", new LiteralNode("2"));
         VariableAssignmentNode varAssign2 = new VariableAssignmentNode("b", new LiteralNode("3"));
         AddVarEquals addVarEquals = new AddVarEquals("+", "c", varAssign1, varAssign2);
@@ -96,8 +94,9 @@ public class TACGenTest {
         assertEquals("MOV c, R4", instructions.get(7).toString());
         assertEquals("CALL print, c", instructions.get(8).toString());
     }
+
     @Test
-    void stringTest() {
+    public void stringTest() {
         String code = " print \"wolf\"";
         Lexicon lexer = new Lexicon(code);
         lexer.splitter();
@@ -113,7 +112,7 @@ public class TACGenTest {
     }
 
     @Test
-    void invalidCodeTest() {
+    public void invalidCodeTest() {
         String code = "invalid syntax";
         Lexicon lexer = new Lexicon(code);
         lexer.splitter();
@@ -122,12 +121,11 @@ public class TACGenTest {
         Node ast = parser.parse();
         TACgenerator tacGenerator = new TACgenerator();
         List<Instruction> instructions = tacGenerator.generateCode(ast);
-        assertEquals(0,instructions.size());
-
+        assertEquals(0, instructions.size());
     }
 
     @Test
-    void stringAssignmentAndPrintTest() {
+    public void stringAssignmentAndPrintTest() {
         String code = "wolf = \"fluffy\"; print wolf";
         Lexicon lexer = new Lexicon(code);
         lexer.splitter();
@@ -145,7 +143,7 @@ public class TACGenTest {
     }
 
     @Test
-    void emptyCodeTest() {
+    public void emptyCodeTest() {
         String code = "";
         Lexicon lexer = new Lexicon(code);
         lexer.splitter();
@@ -158,10 +156,8 @@ public class TACGenTest {
         assertEquals(0, instructions.size());
     }
 
-
-
     @Test
-    void variableAssignmentAndAdditionTest() {
+    public void variableAssignmentAndAdditionTest() {
         String code = "a = 5; b = 10; c = a + b; print c";
         Lexicon lexer = new Lexicon(code);
         lexer.splitter();
@@ -182,8 +178,9 @@ public class TACGenTest {
         assertEquals("MOV c, R4", instructions.get(7).toString());
         assertEquals("CALL print, c", instructions.get(8).toString());
     }
+
     @Test
-    void incompleteAssignmentTest() {
+    public void incompleteAssignmentTest() {
         String code = "a = 12";
         Lexicon lexer = new Lexicon(code);
         lexer.splitter();
@@ -193,13 +190,10 @@ public class TACGenTest {
         TACgenerator tacGenerator = new TACgenerator();
         List<Instruction> instructions = tacGenerator.generateCode(ast);
         assertEquals(0, instructions.size());
-
     }
 
-
-
     @Test
-    void variableAdditionWithAssignment() {
+    public void variableAdditionWithAssignment() {
         String code = "a = 12;a + 10; ";
         Lexicon lexer = new Lexicon(code);
         lexer.splitter();
@@ -216,9 +210,8 @@ public class TACGenTest {
         assertEquals("ADD R2, R0 , R1", instructions.get(3).toString());
     }
 
-
     @Test
-    void multiplyTest() {
+    public void multiplyTest() {
         String code = "5 * 76";
         Lexicon lexer = new Lexicon(code);
         lexer.splitter();
@@ -235,5 +228,4 @@ public class TACGenTest {
         assertEquals("MOV result, R2", instructions.get(3).toString());
         assertEquals("CALL print, R2", instructions.get(4).toString());
     }
-
 }

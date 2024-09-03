@@ -15,11 +15,6 @@ public class AddVarExtended extends BinaryVarExtended {
         return "Integer";
     }
 
-    @Override
-    public String toString() {
-        return "VariableAssignment : void\n  |\n  +-- Variable(" + getVariableName() + ")\n  +-- " + getExpression() +
-                "\nVariableAssignment : void\n  |\n  +-- Variable(" + getVariableName2() + ")\n  +-- " + getValue2() +
-                "\n" + getClass().getSimpleName() + " (" + getOperation() + "): " + getType() + "\n  |\n  +-- Variable(" + getVariableName() + ")\n  +-- Variable(" + getVariableName2() + ")";
-    }
+
 
 }

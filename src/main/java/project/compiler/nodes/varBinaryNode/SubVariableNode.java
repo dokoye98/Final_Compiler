@@ -8,8 +8,5 @@ public class SubVariableNode extends BinaryAssignmentNode {
         super(variableName, value, operation, secondValue, variableNameRepeat);
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName()+"(" + getOperation() + "): " + getType() + "\n  |\n  +-- Variable(" + getVariableName() + ")\n  +-- " + getValue() + "\n  +-- " + getSecondValue();
-    }
+
 }

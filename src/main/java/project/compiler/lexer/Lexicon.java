@@ -22,7 +22,6 @@ public class Lexicon {
     public void splitter() {
         List<String> lines = LineCheck.lineChecker(input);
         for (String line : lines) {
-            //System.out.println(line);
             processor(line);
         }
     }
@@ -38,47 +37,55 @@ public class Lexicon {
             if (match.matches()) {
                 matched = true;
 
-                if (type == TokenCheck.NUM_VAR_ADD && match.groupCount() == 3) {
-                    String variableTotal = match.group(1);
-                    String variableOne = match.group(2);
-                    String variableTwo = match.group(3);
+                if (VarAssignOperation.isBasicBinary(type)) {
+                    String intKeyword = match.group(1);
+                    String variableTotal = match.group(2);
+                    String variableOne = match.group(3);
+                    String variableTwo = match.group(4);
+                    tokens.add(new Token(TokenCheck.INTEGER_KEYWORD, intKeyword));
                     tokens.add(new Token(TokenCheck.NUM_VAR, variableTotal));
                     tokens.add(new Token(TokenCheck.VAR_ASSIGN, "="));
                     tokens.add(new Token(TokenCheck.NUM_VAR, variableOne));
                     tokens.add(new Token(VarAssignOperation.getVarOperation(type), VarAssignOperation.getOperatorSymbol(type)));
                     tokens.add(new Token(TokenCheck.NUM_VAR, variableTwo));
-                }else  if (type == TokenCheck.NUM_VAR_SUB && match.groupCount() == 3) {
-                    String variableTotal = match.group(1);
-                    String variableOne = match.group(2);
-                    String variableTwo = match.group(3);
-                    tokens.add(new Token(TokenCheck.NUM_VAR, variableTotal));
+                }else if(type == TokenCheck.ARRAY_ASSIGN && match.groupCount() == 2){
+                    String arrayName = match.group(1);
+                    String arrayElements = match.group(2);
+
+                    tokens.add(new Token(TokenCheck.VARIABLE, arrayName));
                     tokens.add(new Token(TokenCheck.VAR_ASSIGN, "="));
-                    tokens.add(new Token(TokenCheck.NUM_VAR, variableOne));
-                    tokens.add(new Token(VarAssignOperation.getVarOperation(type), VarAssignOperation.getOperatorSymbol(type)));
-                    tokens.add(new Token(TokenCheck.NUM_VAR, variableTwo));
-                }
-                else if (type == TokenCheck.NUM_VAR_DIV && match.groupCount() == 3) {
-                    String variableTotal = match.group(1);
-                    String variableOne = match.group(2);
-                    String variableTwo = match.group(3);
-                    tokens.add(new Token(TokenCheck.NUM_VAR, variableTotal));
+                    tokens.add(new Token(TokenCheck.ARRAY_LITERAL, arrayElements));
+
+                    String[] elements = arrayElements.split(",");
+                    for (String element : elements) {
+                        tokens.add(new Token(TokenCheck.ARRAY_ELEMENT, element.trim()));
+                    }
+
+            }else if (type == TokenCheck.VAR_ASSIGN_ARRAY ) {
+                    String intKeyword = match.group(1);
+                    String arrayName = match.group(2);
+                    String array = match.group(3);
+                    String index = match.group(4);
+                    tokens.add(new Token(TokenCheck.INTEGER_KEYWORD, intKeyword));
+                    tokens.add(new Token(TokenCheck.VARIABLE, arrayName));
                     tokens.add(new Token(TokenCheck.VAR_ASSIGN, "="));
-                    tokens.add(new Token(TokenCheck.NUM_VAR, variableOne));
-                    tokens.add(new Token(VarAssignOperation.getVarOperation(type), VarAssignOperation.getOperatorSymbol(type)));
-                    tokens.add(new Token(TokenCheck.NUM_VAR, variableTwo));
-                }
-                else if (type == TokenCheck.NUM_VAR_MUL && match.groupCount() == 3) {
-                    String variableTotal = match.group(1);
-                    String variableOne = match.group(2);
-                    String variableTwo = match.group(3);
-                    tokens.add(new Token(TokenCheck.NUM_VAR, variableTotal));
-                    tokens.add(new Token(TokenCheck.VAR_ASSIGN, "="));
-                    tokens.add(new Token(TokenCheck.NUM_VAR, variableOne));
-                    tokens.add(new Token(VarAssignOperation.getVarOperation(type), VarAssignOperation.getOperatorSymbol(type)));
-                    tokens.add(new Token(TokenCheck.NUM_VAR, variableTwo));
-                }else if (type == TokenCheck.VARIABLE_ASSIGN && match.groupCount() == 2) {
-                    String variableName = match.group(1);
-                    String literalValue = match.group(2);
+                    tokens.add(new Token(TokenCheck.VARIABLE, array));
+                    tokens.add(new Token(TokenCheck.ARRAY_INDEX, index));
+                } else if (type == TokenCheck.FOR_LOOP && match.groupCount() == 4) {
+                    String for_Loop = match.group(1);
+                    String variable = match.group(2);
+                    String in = match.group(3);
+                    String arrVariable = match.group(4);
+                    tokens.add(new Token(TokenCheck.FOR_LOOP, for_Loop));
+                    tokens.add(new Token(TokenCheck.VARIABLE, variable));
+                    tokens.add(new Token(TokenCheck.IN_KEYWORD, in));
+                    tokens.add(new Token(TokenCheck.ARRAY_ASSIGN, arrVariable));
+
+
+                }else if (type == TokenCheck.VARIABLE_ASSIGN && match.groupCount() == 3) {
+                    String variableName = match.group(2);
+                    String literalValue = match.group(3);
+                    tokens.add(new Token(TokenCheck.STRING_KEYWORD, "String"));
                     tokens.add(new Token(TokenCheck.VARIABLE, variableName));
                     tokens.add(new Token(TokenCheck.VAR_ASSIGN, "="));
                     tokens.add(new Token(TokenCheck.LITERAL, literalValue));
@@ -87,13 +94,18 @@ public class Lexicon {
                     String literal = match.group(2);
                     tokens.add(new Token(TokenCheck.PRINT, match.group(1)));
                     tokens.add(new Token(TokenCheck.LITERAL, literal));
-                } else if (type == TokenCheck.NUM_VAR && match.groupCount() == 2) {
-                    String functionCall = match.group(1);
+                } else if (type == TokenCheck.NUM_VAR && match.groupCount() == 4) {
+                    String intKeyword = match.group(1);
                     String variableName = match.group(2);
-                    tokens.add(new Token(TokenCheck.NUM_VAR, functionCall));
-                    tokens.add(new Token(TokenCheck.VAR_ASSIGN, "="));
-                    tokens.add(new Token(TokenCheck.LITERAL, variableName));
+                    String assignmentOperator = match.group(3);
+                    String literalValue = match.group(4);
+                    tokens.add(new Token(TokenCheck.INTEGER_KEYWORD, intKeyword));
+                    tokens.add(new Token(TokenCheck.VARIABLE, variableName));
+                    tokens.add(new Token(TokenCheck.VAR_ASSIGN, assignmentOperator));
+                    tokens.add(new Token(TokenCheck.LITERAL, literalValue));
                 }
+
+
 
                 else if (VarOperationCheckExtended.isBinaryVar(type)) {
                     String variableName = match.group(1);

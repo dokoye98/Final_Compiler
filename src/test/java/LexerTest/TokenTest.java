@@ -7,6 +7,7 @@ import project.compiler.lexer.Lexicon;
 import project.compiler.tokens.Token;
 import project.compiler.tokens.TokenCheck;
 
+import java.util.ArrayList;
 import java.util.List;
 import static org.junit.Assert.*;
 
@@ -17,12 +18,12 @@ public class TokenTest {
         Lexicon lexer = new Lexicon("print\"hello world\"");
         lexer.splitter();
         List<Token> tokens = lexer.getTokens();
-
         Assertions.assertEquals(2, tokens.size());
         Assertions.assertEquals(TokenCheck.PRINT, tokens.get(0).getKey());
         Assertions.assertEquals("print", tokens.get(0).getValue());
         Assertions.assertEquals(TokenCheck.LITERAL, tokens.get(1).getKey());
         Assertions.assertEquals("hello world", tokens.get(1).getValue());
+        System.out.println("All tests passed");
     }
 
     @Test

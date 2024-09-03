@@ -3,9 +3,7 @@ package project.vm.codegen;
 public class LoadInstruction extends Instruction {
 
     private final RegisterName register;
-
     private final String value;
-
     public LoadInstruction(String label, RegisterName register, String value) {
         super(label, "LOAD");
         this.register = register;
@@ -15,7 +13,7 @@ public class LoadInstruction extends Instruction {
     @Override
     public int execute(VM vm) {
 
-        if (value.matches("-?\\d+")) { // Check if value is a number
+        if (value.matches("-?\\d+")) {
             vm.setRegister(register, Integer.parseInt(value));
         } else {
             Object varValue = vm.getVariable(value);
@@ -29,6 +27,6 @@ public class LoadInstruction extends Instruction {
 
     @Override
     public String toString() {
-        return getLabelString() + getOpcode() + " " + register + ", " + value;
+        return  getOpcode() + " " + register + ", " + value;
     }
 }

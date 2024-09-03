@@ -13,7 +13,12 @@ public class MovInstruction extends Instruction{
     @Override
     public int execute(VM vm) {
        // Object value;
-     if(endPoint instanceof RegisterName){
+      if (endPoint instanceof String && source instanceof String) {
+            // RegisterName register = (RegisterName) source;
+            Object varValue =  vm.getVariable((String) source);
+            vm.setVariable((String)endPoint,varValue);
+
+        }else if(endPoint instanceof RegisterName){
          RegisterName register = (RegisterName) endPoint;
          try{
              int varValue = (int) vm.getVariable((String) source);

@@ -1,8 +1,8 @@
 package project.compiler.nodes;
 
 public class PrintVariableNode extends ExpressionNode {
-    private String variableName;
-    private ExpressionNode variableValue;
+    private final String variableName;
+    private final ExpressionNode variableValue;
 
     public String getPrinter() {
         return printer;

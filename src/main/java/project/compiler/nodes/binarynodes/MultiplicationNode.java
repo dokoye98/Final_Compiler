@@ -10,8 +10,5 @@ public class MultiplicationNode extends BinaryOperationNode {
         super(left, operator, right);
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName()+"(" + getOperator() + "): " + getType() + "\n  |\n  --- " + getLeft() + "\n  --- " + getRight();
-    }
+
 }

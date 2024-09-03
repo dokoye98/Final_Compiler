@@ -35,6 +35,7 @@ public class BinaryOperationNode extends ExpressionNode{
 
     @Override
     public String toString() {
-        return "BinaryOperation(" + "): " + getType() + "\n  |\n  +-- " + left + "\n  +-- " + right;
+        return getClass().getSimpleName()+"(" + getOperator() + "): "
+                + getType() + "\n  |\n  --- " + getLeft() + "\n  --- " + getRight();
     }
 }

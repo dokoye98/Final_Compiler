@@ -1,13 +1,15 @@
 package project.vm.codegen;
 
+import java.sql.Ref;
+
 public class AddInstruction extends Instruction{
 
-    private final RegisterName operand1;
-    private final RegisterName result;
+    private final Object operand1;
+    private final Object result;
 
-    private final RegisterName operand2;
+    private final Object operand2;
 
-    public AddInstruction(String label, RegisterName result, RegisterName operand1, RegisterName operand2) {
+    public AddInstruction(String label, Object result, Object operand1, Object operand2) {
         super(label, "ADD");
         this.result = result;
         this.operand1 = operand1;
@@ -16,13 +18,22 @@ public class AddInstruction extends Instruction{
 
     @Override
     public int execute(VM vm) {
-        String value1 = (String) vm.getRegister(operand1);
-        String value2 = (String) vm.getRegister(operand2);
-        int intValue1 = Integer.parseInt(value1, 2);
-        int intValue2 = Integer.parseInt(value2, 2);
-        int total= intValue1+intValue2;
-        String bin = Integer.toBinaryString(total);
-        vm.setRegister(result,bin);
+        if(operand1 instanceof RegisterName && operand2 instanceof RegisterName) {
+            String value1 = (String) vm.getRegister((RegisterName) operand1);
+            String value2 = (String) vm.getRegister((RegisterName) operand2);
+
+            int intValue1 = Integer.parseInt(value1, 2);
+            int intValue2 = Integer.parseInt(value2, 2);
+            int total = intValue1 + intValue2;
+            String bin = Integer.toBinaryString(total);
+            vm.setRegister((RegisterName) result, bin);
+        }else if(operand1 instanceof String && operand2 instanceof String && result instanceof String){
+            int value1 = (int) vm.getVariable((String) operand1);
+            int value2 = (int) vm.getVariable((String) operand2);
+            int total = value1 + value2;
+            String bin = Integer.toBinaryString(total);
+            vm.setVariable((String) result, total);
+        }
         return vm.getProgramCounter() + 1;
 
     }

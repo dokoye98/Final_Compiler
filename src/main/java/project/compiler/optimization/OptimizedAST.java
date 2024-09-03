@@ -9,10 +9,8 @@ import project.compiler.nodes.binarynodes.SubtractionNode;
 public class OptimizedAST {
 
 
-    public static Node optimize(Node ast) {
-        if (ast instanceof BinaryOperationNode) {
-            BinaryOperationNode binaryOpNode = (BinaryOperationNode) ast;
-
+    public static Node optimizeBinary(Node ast) {
+        if (ast instanceof BinaryOperationNode binaryOpNode) {
             ExpressionNode left = binaryOpNode.getLeft();
             ExpressionNode right = binaryOpNode.getRight();
             //System.out.println("left and right work");
@@ -21,17 +19,25 @@ public class OptimizedAST {
                 int leftValue = Integer.parseInt(((LiteralNode) left).getValue());
                 int rightValue = Integer.parseInt(((LiteralNode) right).getValue());
                 //System.out.println("conversion works");
-                if (binaryOpNode instanceof AdditionNode) {
-                   // System.out.println("Addition check works");
-                    return new LiteralNode(String.valueOf(leftValue + rightValue));
-                } else if (binaryOpNode instanceof SubtractionNode) {
-                    return new LiteralNode(String.valueOf(leftValue - rightValue));
-                }else if(binaryOpNode instanceof MultiplicationNode){
-                   // System.out.println("Multicheck");
-                    return new LiteralNode(String.valueOf(leftValue * rightValue));
-                }else if(binaryOpNode instanceof DivideNode){
-                 //   System.out.println("div check");
-                    return new LiteralNode(String.valueOf(leftValue / rightValue));
+                switch (binaryOpNode) {
+                    case AdditionNode additionNode -> {
+                        // System.out.println("Addition check works");
+                        return new LiteralNode(String.valueOf(leftValue + rightValue));
+                    }
+                    case SubtractionNode subtractionNode -> {
+                        return new LiteralNode(String.valueOf(leftValue - rightValue));
+                    }
+                    case MultiplicationNode multiplicationNode -> {
+                        // System.out.println("Multi check");
+                        return new LiteralNode(String.valueOf(leftValue * rightValue));
+                    }
+                    case DivideNode divideNode -> {
+                        //   System.out.println("div check");
+                        return new LiteralNode(String.valueOf(leftValue / rightValue));
+                    }
+                    default -> {
+                        return new UnknownNode("Unknown operator");
+                    }
                 }
             }
 

@@ -35,4 +35,9 @@ public class BinaryAssignmentNode extends ExpressionNode{
     public String getType() {
         return "Integer";
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+"(" + getOperation() + "): " + getType() + "\n  |\n  +-- Variable(" + getVariableName() + ")\n  +-- " + getValue() + "\n  +-- " + getSecondValue();
+    }
 }

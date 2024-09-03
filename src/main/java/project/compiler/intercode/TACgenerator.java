@@ -9,14 +9,12 @@ import java.util.List;
 public class TACgenerator {
     private int tempVarCounter = 0;
 
-    private String getNextTempVar() {
-        return "t" + (tempVarCounter++);
-    }
+
+
 
     public List<Instruction> generateCode(Node ast) {
         List<Instruction> instructions = new ArrayList<>();
-        if (ast instanceof PrintStatementNode) {
-            PrintStatementNode printNode = (PrintStatementNode) ast;
+        if (ast instanceof PrintStatementNode printNode) {
             ExpressionNode value = printNode.getExpression();
             RegisterName reg1 = getNextRegister();
             if (value instanceof LiteralNode) {
@@ -30,8 +28,7 @@ public class TACgenerator {
                 instructions.add(new CallInstruction(null, "print", RegisterName.R1));
             }
 
-        } else if (ast instanceof BinaryOperationNode) {
-            BinaryOperationNode binaryOperationNode = (BinaryOperationNode) ast;
+        } else if (ast instanceof BinaryOperationNode binaryOperationNode) {
             ExpressionNode left = binaryOperationNode.getLeft();
             ExpressionNode right = binaryOperationNode.getRight();
             String operation = binaryOperationNode.getOperator();
@@ -67,8 +64,108 @@ public class TACgenerator {
                 instructions.add(new MovInstruction(null, "result", regResult));
                 instructions.add(new CallInstruction(null, "print", regResult));
             }
-        } else if (ast instanceof BinaryAssignNode) {
-            BinaryAssignNode binaryAssignNode = (BinaryAssignNode) ast;
+        } else if (ast instanceof ArrayAssignmentNode arrayAssignmentNode){
+            String varArr = arrayAssignmentNode.getArrayName();
+            List<ExpressionNode> elements = arrayAssignmentNode.getElements();
+            List<RegisterName> elementRegisters = new ArrayList<>();
+
+            for (ExpressionNode element : elements) {
+                if (element instanceof LiteralNode) {
+                    RegisterName reg = getNextRegister();
+                    String elementValue = ((LiteralNode) element).getValue();
+                    instructions.add(new LoadInstruction(null, reg, elementValue));
+                    elementRegisters.add(reg);
+                }
+            }
+            for (int i = 0; i < elementRegisters.size(); i++) {
+                instructions.add(new StoreInstruction(null, elementRegisters.get(i), varArr + "[" + i + "]"));
+            }
+
+
+        }
+        else if (ast instanceof AssignArrNode assignArrNode) {
+            String varArr = assignArrNode.getArrayAssignmentNode().getArrayName();
+            List<ExpressionNode> elements = assignArrNode.getArrayAssignmentNode().getElements();
+            List<RegisterName> elementRegisters = new ArrayList<>();
+
+            for (ExpressionNode element : elements) {
+                if (element instanceof LiteralNode) {
+                    RegisterName reg = getNextRegister();
+                    String elementValue = ((LiteralNode) element).getValue();
+                    instructions.add(new LoadInstruction(null, reg, elementValue));
+                    elementRegisters.add(reg);
+                }
+            }
+            for (int i = 0; i < elementRegisters.size(); i++) {
+                instructions.add(new StoreInstruction(null, elementRegisters.get(i), varArr + "[" + i + "]"));
+            }
+            ExpressionNode valueOne = assignArrNode.getIndexes().getFirst();
+            String indexOne = ((LiteralNode) valueOne).getValue();
+            instructions.add(new MovInstruction(null,assignArrNode.getVariableNames().get(1),varArr + "[" + indexOne + "]"));
+            ExpressionNode valueTwo = assignArrNode.getIndexes().getLast();
+            String indexTwo = ((LiteralNode) valueTwo).getValue();
+            instructions.add(new MovInstruction(null,assignArrNode.getVariableNames().get(3),varArr + "[" + indexTwo + "]"));
+            String operation = assignArrNode.getOperator();
+            RegisterName reg1 = getNextRegister();
+            RegisterName reg2 = getNextRegister();
+            RegisterName regResult = getNextRegister();
+            //instructions.add(new MovInstruction(null,reg1,assignArrNode.getVariableNames().get(1)));
+            //instructions.add(new MovInstruction(null,reg2,assignArrNode.getVariableNames().get(3)));
+            switch (operation) {
+                case "+":
+                    instructions.add(new AddInstruction(null, assignArrNode.getFinalVar(), assignArrNode.getVariableNames().get(1), assignArrNode.getVariableNames().get(3)));
+                    break;
+                case "*":
+                    instructions.add(new MulInstruction(null, assignArrNode.getFinalVar(), assignArrNode.getVariableNames().get(1), assignArrNode.getVariableNames().get(3)));
+                    break;
+                case "/":
+                    instructions.add(new DivInstruction(null, assignArrNode.getFinalVar(), assignArrNode.getVariableNames().get(1), assignArrNode.getVariableNames().get(3)));
+                    break;
+                case "-":
+                    instructions.add(new SubInstruction(null, assignArrNode.getFinalVar(), assignArrNode.getVariableNames().get(1), assignArrNode.getVariableNames().get(3)));
+                    break;
+            }
+            instructions.add(new MovInstruction(null,RegisterName.R_TOTAL,assignArrNode.getFinalVar()));
+            instructions.add(new CallInstruction(null,"print",RegisterName.R_TOTAL));
+        }
+        else if (ast instanceof LoopArrNode loopArrNode) {
+            List<ExpressionNode> elements = loopArrNode.getArrayAssignmentNode().getElements();
+            String varArr = loopArrNode.getArrayAssignmentNode().getArrayName();
+            List<RegisterName> elementRegisters = new ArrayList<>();
+
+            for (ExpressionNode element : elements) {
+                if (element instanceof LiteralNode) {
+                    RegisterName reg = getNextRegister();
+                    String elementValue = ((LiteralNode) element).getValue();
+                    instructions.add(new LoadInstruction(null, reg, elementValue));
+                    elementRegisters.add(reg);
+                }
+            }
+            for (int i = 0; i < elementRegisters.size(); i++) {
+                instructions.add(new StoreInstruction(null, elementRegisters.get(i), varArr + "[" + i + "]"));
+            }
+            ArrayAssignmentNode arr = loopArrNode.getArrayAssignmentNode();
+            RegisterName lenRegister = getNextRegister();
+            RegisterName runnerRegister = getNextRegister();
+            RegisterName registerHolder = getNextRegister();
+            instructions.add(new CountInstruction(null,arr,lenRegister));
+            instructions.add(new LoadInstruction(null,runnerRegister,"0"));
+            instructions.add(new LoopEndInstruction(null,runnerRegister,0));
+            for (int i = 0; i < elementRegisters.size(); i++) {
+                instructions.add(new LoadArrInstruction(null,varArr ,registerHolder,runnerRegister));
+                instructions.add(new CallInstruction(null,"print",registerHolder));
+                instructions.add(new NextElementInstruction(null,runnerRegister));
+                instructions.add(new CompareInstruction(null,runnerRegister,lenRegister));
+                instructions.add(new JLTInstruction(null,runnerRegister,lenRegister,new LoopEndInstruction(null,runnerRegister,0)));
+
+            }
+            instructions.add(new LoopEndInstruction(null,runnerRegister,1));
+
+        }
+
+
+
+        else if (ast instanceof BinaryAssignNode binaryAssignNode) {
             VariableAssignmentNode assignOperationOne = binaryAssignNode.getVariableOne();
             VariableAssignmentNode assignOperationTwo = binaryAssignNode.getVariableTwo();
             String operation = binaryAssignNode.getOperation();
@@ -113,8 +210,7 @@ public class TACgenerator {
                 instructions.add(new MovInstruction(null, totalVar, regResult));
                 instructions.add(new CallInstruction(null, "print", totalVar));
             }
-        } else if (ast instanceof BinaryAssignmentNode) {
-            BinaryAssignmentNode binaryAssignmentNode = (BinaryAssignmentNode) ast;
+        } else if (ast instanceof BinaryAssignmentNode binaryAssignmentNode) {
             String variableName = binaryAssignmentNode.getVariableName();
             ExpressionNode value1 = binaryAssignmentNode.getValue();
             ExpressionNode value2 = binaryAssignmentNode.getSecondValue();
@@ -149,8 +245,7 @@ public class TACgenerator {
 
             instructions.add(new MovInstruction(null, variableName, regResult));
             instructions.add(new CallInstruction(null, "print", regResult));
-        } else if (ast instanceof BinaryVarExtended) {
-            BinaryVarExtended binaryVarExtended = (BinaryVarExtended) ast;
+        } else if (ast instanceof BinaryVarExtended binaryVarExtended) {
             String variableName = binaryVarExtended.getVariableName();
             ExpressionNode value1 = binaryVarExtended.getExpression();
             ExpressionNode value2 = binaryVarExtended.getValue2();
@@ -208,8 +303,7 @@ public class TACgenerator {
                 instructions.add(new MovInstruction(null, RegisterName.R0, ((VariableNode) value).getName()));
                 instructions.add(new CallInstruction(null, "print", RegisterName.R0));
             }
-        } else if (ast instanceof VariableAssignmentNode) {
-            VariableAssignmentNode variableAssignmentNode = (VariableAssignmentNode) ast;
+        } else if (ast instanceof VariableAssignmentNode variableAssignmentNode) {
             String variableName = variableAssignmentNode.getVariableName();
             ExpressionNode value = variableAssignmentNode.getExpression();
             RegisterName reg = getNextRegister();

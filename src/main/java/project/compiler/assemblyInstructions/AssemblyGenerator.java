@@ -16,6 +16,8 @@ public class AssemblyGenerator {
             return BinaryVarSetUp.binaryVarSetUp(ast);
         }else if(ast instanceof BinaryAssignNode ){
             return PrintBinarySetUp.printVarBinarySetUp(ast);
+        }else if(ast instanceof LoopArrNode){
+            return LoopAssemblyGenerator.ArrayAssignGenerator(ast);
         }
             else {
             return null;
