@@ -209,8 +209,8 @@ public class Parser {
                     ast = new UnknownNode("Unknown Token: incorrect variable");
                 } else {
                     VariableAssignmentNode variableNode = new VariableAssignmentNode(variableName,value);
-                    System.out.println(variableNode);
                     ast = new PrintVariableNode(variableName, value, functionCall);
+                    System.out.println(variableNode);
                 }
             } else {
                 ast = new UnknownNode("Unknown Token: " + tokens.getFirst().getValue());
@@ -225,7 +225,6 @@ public class Parser {
     }
 
     public void printAST(Node ast) {
-
         System.out.println(ast);
 
     }

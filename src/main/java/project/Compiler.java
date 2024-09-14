@@ -49,6 +49,7 @@ public class Compiler {
                for(String process: tac){
                    System.out.println(process);
                }
+
               List<Instruction> instructions = tacGenerator.generateCode(ast);
                VM vm = new VM(instructions);
                vm.execute();
